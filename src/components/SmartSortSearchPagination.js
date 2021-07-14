@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useGlobalFilters } from "react";
 import { useTable, usePagination, useSortBy } from "react-table";
 import styled from "styled-components";
 
@@ -28,8 +28,11 @@ const Styles = styled.div`
     color: #fff;
     text-align: center;
   }
+  table {
+    position: relative;
+  }
   table,
-  table-striped {
+  table-hover {
     color: #fff;
     text-align: left;
   }
@@ -90,24 +93,61 @@ const Styles = styled.div`
     height: 25px;
     border: none;
   }
+  .search-box {
+    position: absolute;
+    z-index: 3;
+    top: -35px;
+    left: 0px;
+    display: flex;
+  }
+  .search-box input[type="text"] {
+    width: 200px;
+    height: 30px;
+    outline: none;
+    background: transparent;
+    padding: 3px 8px;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    ::-webkit-input-placeholder {
+      /* Chrome/Opera/Safari */
+      color: #ccc;
+    }
+    ::-moz-placeholder {
+      /* Firefox 19+ */
+      color: #ccc;
+    }
+    :-ms-input-placeholder {
+      /* IE 10+ */
+      color: #ccc;
+    }
+    :-moz-placeholder {
+      /* Firefox 18- */
+      color: #ccc;
+    }
+  }
 `;
 
 const SmartSortSearchPagination = ({ data, columns }) => {
-  // let personal = data;
-  // const [newData, setNewData] = useState([]);
-  // console.log("con", newData);
-  // useEffect(() => {
-  //   personal.map((person) =>
-  //     setNewData((currentArray) => [
-  //       ...currentArray,
-  //       {
-  //         name: person.name.first + " " + person.name.last,
-  //         email: person.email,
-  //         phone: person.phone
-  //       }
-  //     ])
-  //   );
-  // }, [personal]);
+  // const [filteredData, setFilteredData] = useState([]);
+
+  // const globalSearch = (e) => {
+  //   let searchInput = e.target.value;
+  //   console.log("ser", searchInput);
+
+  //   let filterData = data.filter((value) => {
+  //     console.log(">>>", value.name.toLowerCase());
+  //     console.log(">>>e", value.email.toLowerCase());
+  //     console.log(">>>ph", value.phone.toLowerCase());
+
+  //     return (
+  //       value.name.toLowerCase().includes(searchInput.toLowerCase()) ||
+  //       value.email.toLowerCase().includes(searchInput.toLowerCase()) ||
+  //       value.phone.toString().toLowerCase().includes(searchInput.toLowerCase())
+  //     );
+  //   });
+  //   setFilteredData({ filterData });
+  // };
+  // let personal = filteredData && filteredData.length ? filteredData : data;
 
   const {
     page,
@@ -141,28 +181,13 @@ const SmartSortSearchPagination = ({ data, columns }) => {
           <h1>Smart table(react-table)</h1>
         </div>
         <table className="table table-hover mt-5" {...getTableProps()}>
-          {/* <span className="search-box">
-          <input
-            type="text"
-            placeholder="Type to search..."
-            // onChange={handleSearch}
-          />
-          <select
-            name="searchValues"
-            id="searchingField"
-            // onChange={handleSelect}
-          >
-            <option className="custom-options" value="name">
-              name
-            </option>
-            <option className="custom-options" vale="work">
-              work
-            </option>
-            <option className="custom-options" value="e-mail">
-              e-mail
-            </option>
-          </select>
-        </span> */}
+          <span className="search-box">
+            <input
+              type="text"
+              placeholder="Type to search..."
+              onChange={(e) => globalSearch(e)}
+            />
+          </span>
           <thead className="basic-table1">
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
