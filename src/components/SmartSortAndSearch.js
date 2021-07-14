@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import styled from "styled-components";
 
 const DIV = styled.div`
@@ -30,6 +30,7 @@ const DIV = styled.div`
   table {
     color: #fff;
     text-align: left;
+    position: relative;
   }
   table > thead > tr > th {
     border-bottom: none !important;
@@ -70,6 +71,69 @@ const DIV = styled.div`
     color: ${({ sortConfig }) =>
       sortConfig?.direction === "ascending" ? "#000" : "#fff"};
   }
+  .search-box {
+    position: absolute;
+    z-index: 3;
+    top: -35px;
+    left: 0px;
+    display: flex;
+  }
+  .search-box input[type="text"] {
+    width: 200px;
+    height: 30px;
+    outline: none;
+    background: transparent;
+    padding: 3px 8px;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    ::-webkit-input-placeholder {
+      /* Chrome/Opera/Safari */
+      color: #ccc;
+    }
+    ::-moz-placeholder {
+      /* Firefox 19+ */
+      color: #ccc;
+    }
+    :-ms-input-placeholder {
+      /* IE 10+ */
+      color: #ccc;
+    }
+    :-moz-placeholder {
+      /* Firefox 18- */
+      color: #ccc;
+    }
+  }
+  select {
+    height: 30px;
+    outline: none;
+    background: none;
+    padding: 3px 8px;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+  select:active,
+  select:hover {
+    outline: none;
+    background: transparent !important;
+  }
+  select option:active,
+  select option:hover {
+    outline: none;
+    background: transparent !important;
+  }
+  select option:hover {
+    background-color: #00a78e !important; /* for IE */
+    color: #fff !important;
+  }
+
+  select option {
+    background-color: transparent !important; /* for IE */
+    color: #00a78e !important;
+  }
+  /* .search-box input[name="search"] {
+    width: 200px;
+    height: 30px;
+  } */
 
   @media (max-width: 337px) {
     .container-head h1 {
@@ -120,9 +184,37 @@ const useSortableData = (items, config = null) => {
 
 const SmartSortAndSearch = ({ data }) => {
   const { items, requestSort, sortConfig } = useSortableData(data);
-  console.log("items>>>", items);
-  console.log("requestSort>>>", requestSort);
-  console.log("sortConfig>>>", sortConfig);
+  const [searched, setSearched] = useState(items);
+  const [selected, setSelected] = useState("name");
+
+  useEffect(() => {
+    setSearched(items);
+  }, [items]);
+  const handleSelect = (e) => {
+    setSelected(e.target.value);
+  };
+
+  const handleSearch = (e) => {
+    let value = e.target.value.toLowerCase();
+    let result = [];
+    if (selected === "name") {
+      result = items.filter((person) =>
+        person.name.toLowerCase().includes(value)
+      );
+    }
+    if (selected === "work") {
+      result = items.filter((person) =>
+        person.website.toLowerCase().includes(value)
+      );
+    }
+    if (selected === "e-mail") {
+      result = items.filter((person) =>
+        person.email.toLowerCase().includes(value)
+      );
+    }
+
+    setSearched(result);
+  };
 
   return (
     <DIV sortConfig={sortConfig}>
@@ -130,54 +222,76 @@ const SmartSortAndSearch = ({ data }) => {
         <div className="container-head">
           <h1>Basic table</h1>
         </div>
-        <table className="table mt-3">
+        <table className="table mt-5">
+          <span className="search-box">
+            <input
+              type="text"
+              placeholder="Type to search..."
+              onChange={handleSearch}
+            />
+            <select
+              name="searchValues"
+              id="searchingField"
+              onChange={handleSelect}
+            >
+              <option className="custom-options" value="name">
+                name
+              </option>
+              <option className="custom-options" vale="work">
+                work
+              </option>
+              <option className="custom-options" value="e-mail">
+                e-mail
+              </option>
+            </select>
+          </span>
           <thead className="basic-table1">
             <tr>
               <th scope="col">
-                <div className="th-box">
-                  <div className="th-title">#</div>
-                </div>
+                <span className="th-box">
+                  <span className="th-title">#</span>
+                </span>
               </th>
               <th scope="col">
-                <div className="th-box">
-                  <div className="th-title">Name</div>
-                  <div
+                <span className="th-box">
+                  <span className="th-title">Name</span>
+                  <span
                     onClick={() => requestSort("name")}
                     className="sort-button"
                   >
-                    <i class="fas fa-sort-up"></i>
-                    <i class="fas fa-sort-down"></i>
-                  </div>
-                </div>
+                    <i className="fas fa-sort-up"></i>
+                    <i className="fas fa-sort-down"></i>
+                  </span>
+                </span>
               </th>
               <th scope="col">
-                <div className="th-box">
-                  <div className="th-title">Work</div>
-                  <div
+                <span className="th-box">
+                  <span className="th-title">Work</span>
+                  <span
                     onClick={() => requestSort("website")}
                     className="sort-button"
                   >
-                    <i class="fas fa-sort-up"></i>
-                    <i class="fas fa-sort-down"></i>
-                  </div>
-                </div>
+                    <i className="fas fa-sort-up"></i>
+                    <i className="fas fa-sort-down"></i>
+                  </span>
+                </span>
               </th>
               <th scope="col">
-                <div className="th-box">
-                  <div className="th-title">E-Mail</div>
-                  <div
+                <span className="th-box">
+                  <span className="th-title">E-Mail</span>
+                  <span
                     onClick={() => requestSort("email")}
                     className="sort-button"
                   >
-                    <i class="fas fa-sort-up"></i>
-                    <i class="fas fa-sort-down"></i>
-                  </div>
-                </div>
+                    <i className="fas fa-sort-up"></i>
+                    <i className="fas fa-sort-down"></i>
+                  </span>
+                </span>
               </th>
             </tr>
           </thead>
           <tbody>
-            {items.map((person, index) => (
+            {searched.map((person, index) => (
               <tr key={person.id}>
                 <th scope="row">{index + 1}</th>
                 <td>{person.name}</td>
